@@ -1,0 +1,1708 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JB Parfume - Management System</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAjbL0DjCt1im-oA3X-7uSVRMidNTOX0gU",
+    authDomain: "jbparfumeee2025.firebaseapp.com",
+    projectId: "jbparfumeee2025",
+    storageBucket: "jbparfumeee2025.appspot.com", 
+    messagingSenderId: "218029492942",
+    appId: "1:218029492942:web:d268fa4e3ea21fae9ede9f",
+    measurementId: "G-XV5ZJFM27R"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+  const auth = firebase.auth();
+</script>
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #6b8cbc;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--secondary);
+            text-align: center;
+        }
+        
+        .sidebar-menu {
+            padding: 0;
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            padding: 0;
+        }
+        
+        .sidebar-menu a {
+            display: block;
+            padding: 15px 20px;
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .sidebar-menu a:hover {
+            background-color: var(--secondary);
+            padding-left: 25px;
+        }
+        
+        .sidebar-menu a.active {
+            background-color: var(--secondary);
+            border-left: 4px solid white;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            font-weight: bold;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: black;
+        }
+        
+        /* Table Styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .table tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* Login Page Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--primary);
+        }
+        
+        .login-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            padding: 30px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h2 {
+            color: var(--primary);
+        }
+        
+        /* Dashboard Stats */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .profit-positive {
+            color: var(--success);
+        }
+        
+        .profit-negative {
+            color: var(--danger);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close:hover {
+            color: var(--danger);
+        }
+        
+        /* Loading Spinner */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Hidden Class */
+        .hidden {
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 5% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h2>JB Parfume</h2>
+                <p>Sistem Manajemen Pengeluaran & Penjualan</p>
+            </div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="login-btn">
+                    <span id="login-text">Login</span>
+                    <span id="login-loading" class="loading hidden"></span>
+                </button>
+            </form>
+            <div style="margin-top: 15px; text-align: center; font-size: 12px; color: #666;">
+                <p><strong>Demo Accounts:</strong><br>
+                admin@jbparfume.com / admin123<br>
+                admin2@jbparfume.com / admin2123</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Awal Modal -->
+    <div id="initial-capital-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Set Modal Awal</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="initial-capital-form">
+                <div class="form-group">
+                    <label for="initial-capital-amount">Jumlah Modal Awal</label>
+                    <input type="number" id="initial-capital-amount" class="form-control" min="0" step="1000" required>
+                </div>
+                <div class="form-group">
+                    <label for="initial-capital-date">Tanggal Modal</label>
+                    <input type="date" id="initial-capital-date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="initial-capital-description">Keterangan</label>
+                    <input type="text" id="initial-capital-description" class="form-control" value="Modal awal usaha JB Parfume" required>
+                </div>
+                <button type="submit" class="btn btn-primary" id="save-capital-btn">
+                    <span id="save-capital-text">Simpan Modal Awal</span>
+                    <span id="save-capital-loading" class="loading hidden"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="container hidden">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>JB Parfume</h2>
+                <small id="user-email" style="font-size: 12px;"></small>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" data-page="penjualan">Penjualan</a></li>
+                <li><a href="#" data-page="pengeluaran">Pengeluaran</a></li>
+                <li><a href="#" data-page="produk">Produk</a></li>
+                <li><a href="#" data-page="laporan">Laporan</a></li>
+                <li><a href="#" data-page="modal-dan-keuntungan">Modal & Keuntungan</a></li>
+                <li><a href="#" data-page="log-history">Log History</a></li>
+                <li><a href="#" id="logout-btn">Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page">
+                <div class="header">
+                    <h1>Dashboard</h1>
+                    <div id="user-info"></div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Penjualan Hari Ini</div>
+                        <div class="stat-value" id="today-sales">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Pengeluaran Hari Ini</div>
+                        <div class="stat-value" id="today-expenses">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Laba Kotor Hari Ini</div>
+                        <div class="stat-value" id="today-gross-profit">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Jumlah Produk</div>
+                        <div class="stat-value" id="total-products">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Total Modal</div>
+                        <div class="stat-value" id="total-capital">Rp 0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Keuntungan Bersih</div>
+                        <div class="stat-value" id="net-profit">Rp 0</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Aktivitas Terbaru</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>Aktivitas</th>
+                                    <th>User</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-activities">
+                                <!-- Recent activities will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Penjualan Page -->
+            <div id="penjualan-page" class="page hidden">
+                <div class="header">
+                    <h1>Manajemen Penjualan</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Tambah Penjualan</div>
+                    <div class="card-body">
+                        <form id="sales-form">
+                            <div class="form-group">
+                                <label for="sales-date">Tanggal</label>
+                                <input type="date" id="sales-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sales-product">Produk</label>
+                                <select id="sales-product" class="form-control" required>
+                                    <!-- Products will be populated here -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sales-quantity">Jumlah</label>
+                                <input type="number" id="sales-quantity" class="form-control" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sales-price">Harga per Unit</label>
+                                <input type="number" id="sales-price" class="form-control" min="0" step="0.01" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="add-sales-btn">
+                                <span id="add-sales-text">Tambah Penjualan</span>
+                                <span id="add-sales-loading" class="loading hidden"></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Daftar Penjualan</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Produk</th>
+                                    <th>Jumlah</th>
+                                    <th>Harga/Unit</th>
+                                    <th>Total</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sales-list">
+                                <!-- Sales list will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pengeluaran Page -->
+            <div id="pengeluaran-page" class="page hidden">
+                <div class="header">
+                    <h1>Manajemen Pengeluaran</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Tambah Pengeluaran</div>
+                    <div class="card-body">
+                        <form id="expense-form">
+                            <div class="form-group">
+                                <label for="expense-date">Tanggal</label>
+                                <input type="date" id="expense-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-category">Kategori</label>
+                                <select id="expense-category" class="form-control" required>
+                                    <option value="Bahan Baku">Bahan Baku</option>
+                                    <option value="Operasional">Operasional</option>
+                                    <option value="Pemasaran">Pemasaran</option>
+                                    <option value="Modal">Modal</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-description">Deskripsi</label>
+                                <input type="text" id="expense-description" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-amount">Jumlah</label>
+                                <input type="number" id="expense-amount" class="form-control" min="0" step="0.01" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="add-expense-btn">
+                                <span id="add-expense-text">Tambah Pengeluaran</span>
+                                <span id="add-expense-loading" class="loading hidden"></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Daftar Pengeluaran</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Kategori</th>
+                                    <th>Deskripsi</th>
+                                    <th>Jumlah</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-list">
+                                <!-- Expense list will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produk Page -->
+            <div id="produk-page" class="page hidden">
+                <div class="header">
+                    <h1>Manajemen Produk</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Tambah Produk</div>
+                    <div class="card-body">
+                        <form id="product-form">
+                            <div class="form-group">
+                                <label for="product-name">Nama Produk</label>
+                                <input type="text" id="product-name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-description">Deskripsi</label>
+                                <textarea id="product-description" class="form-control" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-price">Harga Jual</label>
+                                <input type="number" id="product-price" class="form-control" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-cost">Harga Modal</label>
+                                <input type="number" id="product-cost" class="form-control" min="0" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="product-stock">Stok Awal</label>
+                                <input type="number" id="product-stock" class="form-control" min="0" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="add-product-btn">
+                                <span id="add-product-text">Tambah Produk</span>
+                                <span id="add-product-loading" class="loading hidden"></span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Daftar Produk</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Nama Produk</th>
+                                    <th>Deskripsi</th>
+                                    <th>Harga Jual</th>
+                                    <th>Harga Modal</th>
+                                    <th>Laba/Unit</th>
+                                    <th>Stok</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="product-list">
+                                <!-- Product list will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Laporan Page -->
+            <div id="laporan-page" class="page hidden">
+                <div class="header">
+                    <h1>Laporan Keuangan</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Filter Laporan</div>
+                    <div class="card-body">
+                        <form id="report-form">
+                            <div class="form-group">
+                                <label for="report-start-date">Tanggal Mulai</label>
+                                <input type="date" id="report-start-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="report-end-date">Tanggal Akhir</label>
+                                <input type="date" id="report-end-date" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Generate Laporan</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Ringkasan Laporan</div>
+                    <div class="card-body">
+                        <div id="report-summary">
+                            <!-- Report summary will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Detail Penjualan</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Produk</th>
+                                    <th>Jumlah</th>
+                                    <th>Harga/Unit</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-sales">
+                                <!-- Report sales will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Detail Pengeluaran</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Kategori</th>
+                                    <th>Deskripsi</th>
+                                    <th>Jumlah</th>
+                                </tr>
+                            </thead>
+                            <tbody id="report-expenses">
+                                <!-- Report expenses will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal & Keuntungan Page -->
+            <div id="modal-dan-keuntungan-page" class="page hidden">
+                <div class="header">
+                    <h1>Modal & Keuntungan</h1>
+                    <button class="btn btn-primary" id="add-capital-btn">Tambah Modal</button>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Ringkasan Keuangan</div>
+                    <div class="card-body">
+                        <div class="stats-container">
+                            <div class="stat-card">
+                                <div class="stat-label">Total Modal</div>
+                                <div class="stat-value" id="summary-total-capital">Rp 0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total Penjualan</div>
+                                <div class="stat-value" id="summary-total-sales">Rp 0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Total Pengeluaran</div>
+                                <div class="stat-value" id="summary-total-expenses">Rp 0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Keuntungan Bersih</div>
+                                <div class="stat-value" id="summary-net-profit">Rp 0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Riwayat Modal</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Deskripsi</th>
+                                    <th>Jumlah Modal</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="capital-history">
+                                <!-- Capital history will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Log History Page -->
+            <div id="log-history-page" class="page hidden">
+                <div class="header">
+                    <h1>Log History</h1>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">Riwayat Aktivitas</div>
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Waktu</th>
+                                    <th>User</th>
+                                    <th>Aktivitas</th>
+                                    <th>Detail</th>
+                                </tr>
+                            </thead>
+                            <tbody id="log-history-list">
+                                <!-- Log history will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration - GANTI DENGAN KONFIGURASI FIREBASE ANDA
+        const firebaseConfig = {
+            apiKey: "your-api-key",
+            authDomain: "your-project-id.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project-id.appspot.com",
+            messagingSenderId: "your-sender-id",
+            appId: "your-app-id"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Current user
+        let currentUser = null;
+
+        // Format currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(amount);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        // Format datetime
+        function formatDateTime(dateString) {
+            const options = { 
+                day: '2-digit', 
+                month: '2-digit', 
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        // Show loading state
+        function showLoading(buttonId) {
+            document.getElementById(buttonId + '-text').classList.add('hidden');
+            document.getElementById(buttonId + '-loading').classList.remove('hidden');
+        }
+
+        // Hide loading state
+        function hideLoading(buttonId) {
+            document.getElementById(buttonId + '-text').classList.remove('hidden');
+            document.getElementById(buttonId + '-loading').classList.add('hidden');
+        }
+
+        // Add log entry to Firebase
+        async function addLog(activity, details) {
+            try {
+                const log = {
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    userId: currentUser.uid,
+                    userEmail: currentUser.email,
+                    activity: activity,
+                    details: details
+                };
+                
+                await db.collection('logs').add(log);
+                updateRecentActivities();
+            } catch (error) {
+                console.error('Error adding log:', error);
+            }
+        }
+
+        // Calculate total capital from Firebase
+        async function calculateTotalCapital() {
+            try {
+                const snapshot = await db.collection('capital').get();
+                return snapshot.docs.reduce((total, doc) => total + doc.data().amount, 0);
+            } catch (error) {
+                console.error('Error calculating capital:', error);
+                return 0;
+            }
+        }
+
+        // Calculate total sales from Firebase
+        async function calculateTotalSales() {
+            try {
+                const snapshot = await db.collection('sales').get();
+                return snapshot.docs.reduce((total, doc) => {
+                    const data = doc.data();
+                    return total + (data.quantity * data.price);
+                }, 0);
+            } catch (error) {
+                console.error('Error calculating sales:', error);
+                return 0;
+            }
+        }
+
+        // Calculate total expenses from Firebase
+        async function calculateTotalExpenses() {
+            try {
+                const snapshot = await db.collection('expenses').get();
+                return snapshot.docs.reduce((total, doc) => total + doc.data().amount, 0);
+            } catch (error) {
+                console.error('Error calculating expenses:', error);
+                return 0;
+            }
+        }
+
+        // Calculate net profit
+        async function calculateNetProfit() {
+            const totalSales = await calculateTotalSales();
+            const totalExpenses = await calculateTotalExpenses();
+            return totalSales - totalExpenses;
+        }
+
+        // Update recent activities from Firebase
+        async function updateRecentActivities() {
+            try {
+                const snapshot = await db.collection('logs')
+                    .orderBy('timestamp', 'desc')
+                    .limit(5)
+                    .get();
+                
+                const recentActivitiesContainer = document.getElementById('recent-activities');
+                recentActivitiesContainer.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const log = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDateTime(log.timestamp?.toDate())}</td>
+                        <td>${log.activity}</td>
+                        <td>${log.userEmail}</td>
+                    `;
+                    recentActivitiesContainer.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error updating activities:', error);
+            }
+        }
+
+        // Update dashboard stats from Firebase
+        async function updateDashboardStats() {
+            try {
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Today's sales
+                const salesSnapshot = await db.collection('sales')
+                    .where('date', '==', today)
+                    .get();
+                
+                const todaySales = salesSnapshot.docs.reduce((total, doc) => {
+                    const data = doc.data();
+                    return total + (data.quantity * data.price);
+                }, 0);
+                
+                document.getElementById('today-sales').textContent = formatCurrency(todaySales);
+                
+                // Today's expenses
+                const expensesSnapshot = await db.collection('expenses')
+                    .where('date', '==', today)
+                    .get();
+                
+                const todayExpenses = expensesSnapshot.docs.reduce((total, doc) => 
+                    total + doc.data().amount, 0);
+                document.getElementById('today-expenses').textContent = formatCurrency(todayExpenses);
+                
+                // Today's gross profit
+                const todayGrossProfit = todaySales - todayExpenses;
+                document.getElementById('today-gross-profit').textContent = formatCurrency(todayGrossProfit);
+                
+                // Total products
+                const productsSnapshot = await db.collection('products').get();
+                document.getElementById('total-products').textContent = productsSnapshot.size;
+                
+                // Total capital
+                const totalCapital = await calculateTotalCapital();
+                document.getElementById('total-capital').textContent = formatCurrency(totalCapital);
+                
+                // Net profit
+                const netProfit = await calculateNetProfit();
+                const netProfitElement = document.getElementById('net-profit');
+                netProfitElement.textContent = formatCurrency(netProfit);
+                netProfitElement.className = `stat-value ${netProfit >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            } catch (error) {
+                console.error('Error updating dashboard:', error);
+            }
+        }
+
+        // Update modal & keuntungan summary
+        async function updateCapitalProfitSummary() {
+            try {
+                const totalCapital = await calculateTotalCapital();
+                const totalSales = await calculateTotalSales();
+                const totalExpenses = await calculateTotalExpenses();
+                const netProfit = await calculateNetProfit();
+                
+                document.getElementById('summary-total-capital').textContent = formatCurrency(totalCapital);
+                document.getElementById('summary-total-sales').textContent = formatCurrency(totalSales);
+                document.getElementById('summary-total-expenses').textContent = formatCurrency(totalExpenses);
+                
+                const netProfitElement = document.getElementById('summary-net-profit');
+                netProfitElement.textContent = formatCurrency(netProfit);
+                netProfitElement.className = `stat-value ${netProfit >= 0 ? 'profit-positive' : 'profit-negative'}`;
+            } catch (error) {
+                console.error('Error updating summary:', error);
+            }
+        }
+
+        // Update product dropdown from Firebase
+        async function updateProductDropdown() {
+            try {
+                const snapshot = await db.collection('products').get();
+                const productSelect = document.getElementById('sales-product');
+                productSelect.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = `${product.name} - ${formatCurrency(product.price)} (Stok: ${product.stock})`;
+                    productSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error updating product dropdown:', error);
+            }
+        }
+
+        // Update product list from Firebase
+        async function updateProductList() {
+            try {
+                const snapshot = await db.collection('products').get();
+                const productListContainer = document.getElementById('product-list');
+                productListContainer.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const product = doc.data();
+                    const profitPerUnit = product.price - product.cost;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${product.name}</td>
+                        <td>${product.description}</td>
+                        <td>${formatCurrency(product.price)}</td>
+                        <td>${formatCurrency(product.cost)}</td>
+                        <td class="${profitPerUnit >= 0 ? 'profit-positive' : 'profit-negative'}">${formatCurrency(profitPerUnit)}</td>
+                        <td>${product.stock}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${doc.id}')">Hapus</button>
+                        </td>
+                    `;
+                    productListContainer.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error updating product list:', error);
+            }
+        }
+
+        // Update sales list from Firebase
+        async function updateSalesList() {
+            try {
+                const snapshot = await db.collection('sales')
+                    .orderBy('date', 'desc')
+                    .get();
+                
+                const salesListContainer = document.getElementById('sales-list');
+                salesListContainer.innerHTML = '';
+                
+                for (const doc of snapshot.docs) {
+                    const sale = doc.data();
+                    const productDoc = await db.collection('products').doc(sale.productId).get();
+                    const product = productDoc.data();
+                    const total = sale.quantity * sale.price;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(sale.date)}</td>
+                        <td>${product ? product.name : 'Produk tidak ditemukan'}</td>
+                        <td>${sale.quantity}</td>
+                        <td>${formatCurrency(sale.price)}</td>
+                        <td>${formatCurrency(total)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteSale('${doc.id}', '${sale.productId}', ${sale.quantity})">Hapus</button>
+                        </td>
+                    `;
+                    salesListContainer.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error updating sales list:', error);
+            }
+        }
+
+        // Update expense list from Firebase
+        async function updateExpenseList() {
+            try {
+                const snapshot = await db.collection('expenses')
+                    .orderBy('date', 'desc')
+                    .get();
+                
+                const expenseListContainer = document.getElementById('expense-list');
+                expenseListContainer.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const expense = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(expense.date)}</td>
+                        <td>${expense.category}</td>
+                        <td>${expense.description}</td>
+                        <td>${formatCurrency(expense.amount)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteExpense('${doc.id}')">Hapus</button>
+                        </td>
+                    `;
+                    expenseListContainer.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error updating expense list:', error);
+            }
+        }
+
+        // Update capital history from Firebase
+        async function updateCapitalHistory() {
+            try {
+                const snapshot = await db.collection('capital')
+                    .orderBy('date', 'desc')
+                    .get();
+                
+                const capitalHistoryContainer = document.getElementById('capital-history');
+                capitalHistoryContainer.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const cap = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(cap.date)}</td>
+                        <td>${cap.description}</td>
+                        <td>${formatCurrency(cap.amount)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="deleteCapital('${doc.id}')">Hapus</button>
+                        </td>
+                    `;
+                    capitalHistoryContainer.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error updating capital history:', error);
+            }
+        }
+
+        // Update log history from Firebase
+        async function updateLogHistory() {
+            try {
+                const snapshot = await db.collection('logs')
+                    .orderBy('timestamp', 'desc')
+                    .get();
+                
+                const logHistoryContainer = document.getElementById('log-history-list');
+                logHistoryContainer.innerHTML = '';
+                
+                snapshot.forEach(doc => {
+                    const log = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDateTime(log.timestamp?.toDate())}</td>
+                        <td>${log.userEmail}</td>
+                        <td>${log.activity}</td>
+                        <td>${log.details}</td>
+                    `;
+                    logHistoryContainer.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error updating log history:', error);
+            }
+        }
+
+        // Delete product from Firebase
+        async function deleteProduct(productId) {
+            if (confirm('Apakah Anda yakin ingin menghapus produk ini?')) {
+                try {
+                    await db.collection('products').doc(productId).delete();
+                    addLog('Menghapus Produk', 'Produk dihapus dari sistem');
+                    updateProductList();
+                    updateProductDropdown();
+                    updateDashboardStats();
+                } catch (error) {
+                    console.error('Error deleting product:', error);
+                    alert('Error menghapus produk');
+                }
+            }
+        }
+
+        // Delete sale from Firebase
+        async function deleteSale(saleId, productId, quantity) {
+            if (confirm('Apakah Anda yakin ingin menghapus penjualan ini?')) {
+                try {
+                    // Restore product stock
+                    const productRef = db.collection('products').doc(productId);
+                    const productDoc = await productRef.get();
+                    
+                    if (productDoc.exists) {
+                        const currentStock = productDoc.data().stock;
+                        await productRef.update({
+                            stock: currentStock + quantity
+                        });
+                    }
+                    
+                    // Delete sale
+                    await db.collection('sales').doc(saleId).delete();
+                    
+                    addLog('Menghapus Penjualan', 'Penjualan dihapus dari sistem');
+                    
+                    updateSalesList();
+                    updateProductDropdown();
+                    updateDashboardStats();
+                    updateCapitalProfitSummary();
+                } catch (error) {
+                    console.error('Error deleting sale:', error);
+                    alert('Error menghapus penjualan');
+                }
+            }
+        }
+
+        // Delete expense from Firebase
+        async function deleteExpense(expenseId) {
+            if (confirm('Apakah Anda yakin ingin menghapus pengeluaran ini?')) {
+                try {
+                    await db.collection('expenses').doc(expenseId).delete();
+                    addLog('Menghapus Pengeluaran', 'Pengeluaran dihapus dari sistem');
+                    updateExpenseList();
+                    updateDashboardStats();
+                    updateCapitalProfitSummary();
+                } catch (error) {
+                    console.error('Error deleting expense:', error);
+                    alert('Error menghapus pengeluaran');
+                }
+            }
+        }
+
+        // Delete capital from Firebase
+        async function deleteCapital(capitalId) {
+            if (confirm('Apakah Anda yakin ingin menghapus modal ini?')) {
+                try {
+                    await db.collection('capital').doc(capitalId).delete();
+                    addLog('Menghapus Modal', 'Modal dihapus dari sistem');
+                    updateCapitalHistory();
+                    updateDashboardStats();
+                    updateCapitalProfitSummary();
+                } catch (error) {
+                    console.error('Error deleting capital:', error);
+                    alert('Error menghapus modal');
+                }
+            }
+        }
+
+        // Generate report from Firebase
+        async function generateReport(startDate, endDate) {
+            try {
+                const salesSnapshot = await db.collection('sales')
+                    .where('date', '>=', startDate)
+                    .where('date', '<=', endDate)
+                    .get();
+                
+                const expensesSnapshot = await db.collection('expenses')
+                    .where('date', '>=', startDate)
+                    .where('date', '<=', endDate)
+                    .get();
+                
+                const totalSales = salesSnapshot.docs.reduce((total, doc) => {
+                    const data = doc.data();
+                    return total + (data.quantity * data.price);
+                }, 0);
+                
+                const totalExpenses = expensesSnapshot.docs.reduce((total, doc) => 
+                    total + doc.data().amount, 0);
+                
+                const netProfit = totalSales - totalExpenses;
+                
+                // Update report summary
+                const reportSummary = document.getElementById('report-summary');
+                reportSummary.innerHTML = `
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Penjualan</div>
+                            <div class="stat-value">${formatCurrency(totalSales)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Pengeluaran</div>
+                            <div class="stat-value">${formatCurrency(totalExpenses)}</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Laba Bersih</div>
+                            <div class="stat-value ${netProfit >= 0 ? 'profit-positive' : 'profit-negative'}">${formatCurrency(netProfit)}</div>
+                        </div>
+                    </div>
+                `;
+                
+                // Update sales report
+                const reportSalesContainer = document.getElementById('report-sales');
+                reportSalesContainer.innerHTML = '';
+                
+                for (const doc of salesSnapshot.docs) {
+                    const sale = doc.data();
+                    const productDoc = await db.collection('products').doc(sale.productId).get();
+                    const product = productDoc.data();
+                    const total = sale.quantity * sale.price;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(sale.date)}</td>
+                        <td>${product ? product.name : 'Produk tidak ditemukan'}</td>
+                        <td>${sale.quantity}</td>
+                        <td>${formatCurrency(sale.price)}</td>
+                        <td>${formatCurrency(total)}</td>
+                    `;
+                    reportSalesContainer.appendChild(row);
+                }
+                
+                // Update expenses report
+                const reportExpensesContainer = document.getElementById('report-expenses');
+                reportExpensesContainer.innerHTML = '';
+                
+                expensesSnapshot.forEach(doc => {
+                    const expense = doc.data();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDate(expense.date)}</td>
+                        <td>${expense.category}</td>
+                        <td>${expense.description}</td>
+                        <td>${formatCurrency(expense.amount)}</td>
+                    `;
+                    reportExpensesContainer.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error generating report:', error);
+            }
+        }
+
+        // Check initial capital from Firebase
+        async function checkInitialCapital() {
+            try {
+                const snapshot = await db.collection('capital').get();
+                if (snapshot.empty) {
+                    const modal = document.getElementById('initial-capital-modal');
+                    modal.style.display = 'block';
+                    
+                    // Set today's date
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById('initial-capital-date').value = today;
+                }
+            } catch (error) {
+                console.error('Error checking capital:', error);
+            }
+        }
+
+        // Initialize application
+        async function initApp() {
+            // Set current date in forms
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('sales-date').value = today;
+            document.getElementById('expense-date').value = today;
+            
+            // Set default report dates (current month)
+            const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+            document.getElementById('report-start-date').value = firstDay;
+            document.getElementById('report-end-date').value = today;
+            
+            // Update all lists and stats
+            await updateProductDropdown();
+            await updateProductList();
+            await updateSalesList();
+            await updateExpenseList();
+            await updateCapitalHistory();
+            await updateLogHistory();
+            await updateDashboardStats();
+            await updateCapitalProfitSummary();
+            await updateRecentActivities();
+            
+            // Show user info
+            document.getElementById('user-info').textContent = currentUser.email;
+            document.getElementById('user-email').textContent = currentUser.email;
+            
+            // Check if initial capital needs to be set
+            await checkInitialCapital();
+        }
+
+        // Initialize default data in Firebase
+        async function initializeDefaultData() {
+            try {
+                // Check if products exist
+                const productsSnapshot = await db.collection('products').get();
+                if (productsSnapshot.empty) {
+                    // Add default products
+                    const defaultProducts = [
+                        { name: 'Parfume A', description: 'Aroma floral segar', price: 150000, cost: 80000, stock: 50 },
+                        { name: 'Parfume B', description: 'Aroma woody elegan', price: 200000, cost: 100000, stock: 30 },
+                        { name: 'Parfume C', description: 'Aroma citrus fresh', price: 120000, cost: 60000, stock: 40 }
+                    ];
+                    
+                    for (const product of defaultProducts) {
+                        await db.collection('products').add(product);
+                    }
+                }
+            } catch (error) {
+                console.error('Error initializing default data:', error);
+            }
+        }
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Firebase Auth State Observer
+            auth.onAuthStateChanged(async (user) => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('login-page').classList.add('hidden');
+                    document.getElementById('app').classList.remove('hidden');
+                    
+                    await addLog('Login', 'User berhasil login ke sistem');
+                    await initializeDefaultData();
+                    await initApp();
+                } else {
+                    currentUser = null;
+                    document.getElementById('app').classList.add('hidden');
+                    document.getElementById('login-page').classList.remove('hidden');
+                }
+            });
+
+            // Login form submission
+            document.getElementById('login-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                showLoading('login');
+                
+                try {
+                    await auth.signInWithEmailAndPassword(email, password);
+                    // Auth state observer will handle the rest
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('Login gagal: ' + error.message);
+                    hideLoading('login');
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logout-btn').addEventListener('click', async function() {
+                try {
+                    await addLog('Logout', 'User berhasil logout dari sistem');
+                    await auth.signOut();
+                } catch (error) {
+                    console.error('Logout error:', error);
+                }
+            });
+            
+            // Navigation
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    if (this.id === 'logout-btn') return;
+                    
+                    // Remove active class from all links
+                    document.querySelectorAll('.sidebar-menu a').forEach(l => l.classList.remove('active'));
+                    
+                    // Add active class to clicked link
+                    this.classList.add('active');
+                    
+                    // Hide all pages
+                    document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
+                    
+                    // Show selected page
+                    const pageId = this.getAttribute('data-page') + '-page';
+                    document.getElementById(pageId).classList.remove('hidden');
+                });
+            });
+            
+            // Sales form submission
+            document.getElementById('sales-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const productId = document.getElementById('sales-product').value;
+                const date = document.getElementById('sales-date').value;
+                const quantity = parseInt(document.getElementById('sales-quantity').value);
+                const price = parseFloat(document.getElementById('sales-price').value);
+                
+                showLoading('add-sales');
+                
+                try {
+                    // Check product stock
+                    const productDoc = await db.collection('products').doc(productId).get();
+                    if (!productDoc.exists) {
+                        alert('Produk tidak ditemukan!');
+                        hideLoading('add-sales');
+                        return;
+                    }
+                    
+                    const product = productDoc.data();
+                    if (quantity > product.stock) {
+                        alert('Stok produk tidak mencukupi!');
+                        hideLoading('add-sales');
+                        return;
+                    }
+                    
+                    // Add sale
+                    const sale = {
+                        productId: productId,
+                        date: date,
+                        quantity: quantity,
+                        price: price,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await db.collection('sales').add(sale);
+                    
+                    // Update product stock
+                    await db.collection('products').doc(productId).update({
+                        stock: product.stock - quantity
+                    });
+                    
+                    await addLog('Menambah Penjualan', `Menjual ${quantity} unit ${product.name} seharga ${formatCurrency(price)} per unit`);
+                    
+                    // Reset form and update lists
+                    document.getElementById('sales-form').reset();
+                    document.getElementById('sales-date').value = new Date().toISOString().split('T')[0];
+                    await updateSalesList();
+                    await updateProductDropdown();
+                    await updateDashboardStats();
+                    await updateCapitalProfitSummary();
+                    
+                    alert('Penjualan berhasil ditambahkan!');
+                } catch (error) {
+                    console.error('Error adding sale:', error);
+                    alert('Error menambah penjualan: ' + error.message);
+                }
+                
+                hideLoading('add-sales');
+            });
+            
+            // Expense form submission
+            document.getElementById('expense-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const date = document.getElementById('expense-date').value;
+                const category = document.getElementById('expense-category').value;
+                const description = document.getElementById('expense-description').value;
+                const amount = parseFloat(document.getElementById('expense-amount').value);
+                
+                showLoading('add-expense');
+                
+                try {
+                    // Add expense
+                    const expense = {
+                        date: date,
+                        category: category,
+                        description: description,
+                        amount: amount,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await db.collection('expenses').add(expense);
+                    
+                    await addLog('Menambah Pengeluaran', `Pengeluaran ${category}: ${description} sebesar ${formatCurrency(amount)}`);
+                    
+                    // Reset form and update lists
+                    document.getElementById('expense-form').reset();
+                    document.getElementById('expense-date').value = new Date().toISOString().split('T')[0];
+                    await updateExpenseList();
+                    await updateDashboardStats();
+                    await updateCapitalProfitSummary();
+                    
+                    alert('Pengeluaran berhasil ditambahkan!');
+                } catch (error) {
+                    console.error('Error adding expense:', error);
+                    alert('Error menambah pengeluaran: ' + error.message);
+                }
+                
+                hideLoading('add-expense');
+            });
+            
+            // Product form submission
+            document.getElementById('product-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('product-name').value;
+                const description = document.getElementById('product-description').value;
+                const price = parseFloat(document.getElementById('product-price').value);
+                const cost = parseFloat(document.getElementById('product-cost').value);
+                const stock = parseInt(document.getElementById('product-stock').value);
+                
+                showLoading('add-product');
+                
+                try {
+                    // Add product
+                    const product = {
+                        name: name,
+                        description: description,
+                        price: price,
+                        cost: cost,
+                        stock: stock,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await db.collection('products').add(product);
+                    
+                    await addLog('Menambah Produk', `Produk baru "${name}" ditambahkan dengan harga jual ${formatCurrency(price)} dan modal ${formatCurrency(cost)}`);
+                    
+                    // Reset form and update lists
+                    document.getElementById('product-form').reset();
+                    await updateProductList();
+                    await updateProductDropdown();
+                    await updateDashboardStats();
+                    
+                    alert('Produk berhasil ditambahkan!');
+                } catch (error) {
+                    console.error('Error adding product:', error);
+                    alert('Error menambah produk: ' + error.message);
+                }
+                
+                hideLoading('add-product');
+            });
+            
+            // Report form submission
+            document.getElementById('report-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const startDate = document.getElementById('report-start-date').value;
+                const endDate = document.getElementById('report-end-date').value;
+                
+                generateReport(startDate, endDate);
+                
+                addLog('Generate Laporan', `Laporan keuangan dari ${formatDate(startDate)} hingga ${formatDate(endDate)}`);
+            });
+            
+            // Initial capital form submission
+            document.getElementById('initial-capital-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const amount = parseFloat(document.getElementById('initial-capital-amount').value);
+                const date = document.getElementById('initial-capital-date').value;
+                const description = document.getElementById('initial-capital-description').value;
+                
+                showLoading('save-capital');
+                
+                try {
+                    // Add capital
+                    const cap = {
+                        date: date,
+                        description: description,
+                        amount: amount,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                    
+                    await db.collection('capital').add(cap);
+                    
+                    await addLog('Menambah Modal Awal', `Modal awal sebesar ${formatCurrency(amount)} ditambahkan`);
+                    
+                    // Close modal and update
+                    document.getElementById('initial-capital-modal').style.display = 'none';
+                    await updateCapitalHistory();
+                    await updateDashboardStats();
+                    await updateCapitalProfitSummary();
+                    
+                    alert('Modal awal berhasil disimpan!');
+                } catch (error) {
+                    console.error('Error adding capital:', error);
+                    alert('Error menyimpan modal: ' + error.message);
+                }
+                
+                hideLoading('save-capital');
+            });
+            
+            // Add capital button
+            document.getElementById('add-capital-btn').addEventListener('click', function() {
+                const modal = document.getElementById('initial-capital-modal');
+                modal.style.display = 'block';
+                
+                // Set today's date and clear form
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('initial-capital-date').value = today;
+                document.getElementById('initial-capital-amount').value = '';
+                document.getElementById('initial-capital-description').value = 'Tambahan modal usaha';
+            });
+            
+            // Close modal
+            document.querySelector('.close').addEventListener('click', function() {
+                document.getElementById('initial-capital-modal').style.display = 'none';
+            });
+            
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById('initial-capital-modal');
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
